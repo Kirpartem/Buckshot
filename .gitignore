@@ -1,0 +1,10 @@
+myenv/
+__pycache__/
+.venv
+.venv/
+.logs/
+logs/
+.claude/
+.DS_Store
+dist/
+build/
