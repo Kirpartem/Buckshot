@@ -19,20 +19,22 @@ class Player:
 
 
 class BuckshotRouletteGame:
-    def __init__(self, rng_seed: int):
+    def __init__(self, rng_seed: int = 0):
         self.rng = np.random.default_rng(rng_seed)
         self.round: int = 1
         self.sub_round: int = 1
         self.turn: Turn = self.rng.choice([Turn.PLAYER, Turn.DEALER])
-        self.bullet_sequence: list[int] = self.generate_bullet_sequence()
         self.player: Player = Player(self.rng)
         self.dealer: Player = Player(self.rng)
         self.saw_active: bool = False
         self.max_hp = 5
+        self.max_bullets = 8
+        self.bullet_sequence: list[int] = self.generate_bullet_sequence()
+        
 
     def generate_bullet_sequence(self, num_lives: int = 1, num_blanks: int = 1) -> list[int]:
         seq = [0] * num_blanks + [1] * num_lives
-        return self.rng.choice(seq, size=len(seq), replace=False).tolist()
+        return self.rng.permutation(seq).tolist()
 
     def clear_items(self) -> None:
         self.player.items = []
@@ -88,6 +90,7 @@ class BuckshotRouletteGame:
         self.give_items(sub_config.num_items)
         self.turn = self.rng.choice([Turn.PLAYER, Turn.DEALER])
         self.bullet_sequence = self.generate_bullet_sequence(sub_config.lives, sub_config.blanks)
+        self.clear_known_bullets()
     
     def _get_opponent(self, player: Player) -> Player:
         return self.dealer if player is self.player else self.player
@@ -102,14 +105,21 @@ class BuckshotRouletteGame:
             case 2:
                 hp = self.rng.integers(4, 6)
                 num_bullets = self.rng.integers(2, 7)
-                lives_percentage = self.rng.uniform(0.4, 0.6)
+                lives_percentage = self.rng.uniform(0.3, 0.6)
                 num_items = self.rng.integers(1, 3)  # [1, 2]
             case _:
-                hp = self.rng.integers(3, 5)
-                num_bullets = self.rng.integers(2, 9)
-                lives_percentage = self.rng.uniform(0.5, 0.6)
-                num_items = self.rng.choice([1, 2, 3], p=np.array([3, 2, 1]) / 6) # [1,1,1,2,2,3] <-- weights
-        lives = round(num_bullets * lives_percentage)
+                hp = self.rng.integers(3, self.max_hp)
+                num_bullets = self.rng.integers(3, self.max_bullets)
+                lives_percentage = self.rng.uniform(0.4, 0.8)
+                probs = [
+                    0.5, # For 1 item
+                    0.35, # For 2 items
+                    0.15 # For 3 items
+                ]
+                num_items = self.rng.choice([1, 2, 3], p=probs)
+            
+        lives = int(np.floor(num_bullets * lives_percentage))
+        lives = max(1, min(lives, num_bullets - 1))
         blanks = num_bullets - lives
         return SubroundCombo(num_items, hp, blanks, lives)
 
@@ -246,4 +256,3 @@ class BuckshotRouletteGame:
             terminated=terminated,
             info=info,
         )
-

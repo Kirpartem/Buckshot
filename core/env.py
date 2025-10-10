@@ -26,8 +26,7 @@ class BuckshotRouletteEnv(gym.Env):
         super().__init__()
 
         self.opponent_policy = opponent_policy
-        # Initialize game with a temporary seed - will be replaced on first reset()
-        self.game = BuckshotRouletteGame(rng_seed=0)
+        self.game = BuckshotRouletteGame()
 
         # Define action and observation spaces
         self.action_space = gym.spaces.Discrete(len(GAME_ACTIONS))
@@ -188,14 +187,11 @@ class BuckshotRouletteEnv(gym.Env):
 
         return self._get_obs(), {}
 
-# In env.py
-
     def _opponent_turn(self):
         """Execute opponent's turn(s) until it's the agent's turn."""
         max_opponent_steps = 500
         opponent_steps = 0
 
-        # The loop condition remains the same
         while not self._is_agent_turn() and not self._is_terminal() and opponent_steps < max_opponent_steps:
             
             # Calculate the mask ONCE at the start of the decision.
@@ -213,13 +209,11 @@ class BuckshotRouletteEnv(gym.Env):
 
             action = ACTION_MAP[action_idx]
             self.game.step(action)
-            opponent_steps += 1
-            
+            opponent_steps += 1  
             # The mask will be recalculated on the next iteration of the while loop,
             # but only if the opponent gets another move in the same turn.
 
     def _is_agent_turn(self) -> bool:
-        """Check if it's currently the agent's turn."""
         if self._agent_is_player:
             return self.game.turn == Turn.PLAYER
         else:
@@ -248,7 +242,7 @@ class BuckshotRouletteEnv(gym.Env):
         agent_hp_change = step_result.new_bot_hp - step_result.prev_bot_hp
         opponent_hp_change = step_result.new_target_hp - step_result.prev_target_hp
 
-        # Reward structure - optimized branching
+        # Reward structure itself
         if not step_result.valid:
             reward = -10.0
         else:

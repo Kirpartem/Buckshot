@@ -1,14 +1,12 @@
 from enum import Enum
 from dataclasses import dataclass
 
-# --- Turn ---
 class Turn(Enum):
     PLAYER = "player"
     DEALER = "dealer"
 
 TURNS: list[str] = [t.value for t in Turn]
 
-# --- Items ---
 class Item(Enum):
     GLASS = "Glass"
     CIGARETTES = "Cigarettes"
@@ -18,7 +16,6 @@ class Item(Enum):
 
 ITEMS: list[Item] = list(Item)
 
-# --- Actions ---
 class GameAction(Enum):
     SHOOT_SELF = "shoot_self"
     SHOOT_TARGET = "shoot_target"
@@ -40,7 +37,6 @@ MAX_ITEM_COUNT = 8
 MAX_CYLINDER = 6
 HANDCUFF_MAX = 2
 
-# --- StepResult ---
 @dataclass
 class StepResult:
     valid: bool
