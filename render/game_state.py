@@ -7,7 +7,6 @@ from typing import Optional
 @dataclass
 class GameModeConfig:
     """Configuration for different game modes."""
-    # Mode type
     is_pvp: bool  # True = Player vs AI, False = AI vs AI
 
     # Display names
