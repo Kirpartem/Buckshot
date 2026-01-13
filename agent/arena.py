@@ -8,7 +8,7 @@ from tqdm import tqdm
 from sb3_contrib import MaskablePPO
 
 from core.env import BuckshotRouletteEnv
-from config import TrainingConfig
+from agent.config import TrainingConfig
 
 # Global cache to prevent redundant model loading during evaluation
 _policy_cache: Dict[str, any] = {}  # type: ignore

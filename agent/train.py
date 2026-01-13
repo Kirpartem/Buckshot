@@ -6,9 +6,9 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 from sb3_contrib import MaskablePPO
 
 from core.env import BuckshotRouletteEnv
-from config import TrainingConfig, set_global_seed
-from callbacks import GenerationCallback, ProgressCallback
-import arena
+from agent.config import TrainingConfig, set_global_seed
+from agent.callbacks import GenerationCallback, ProgressCallback
+import agent.arena as arena
 
 
 def make_env(opponent_model_path: Optional[str] = None, rank: int = 0, seed: int = 0):
